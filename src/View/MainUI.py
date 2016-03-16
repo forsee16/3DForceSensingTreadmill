@@ -36,15 +36,6 @@ class MyMplCanvas(FigureCanvas):
         pass
 
 
-class MyStaticMplCanvas(MyMplCanvas):
-    """Simple canvas with a sine plot."""
-
-    def compute_initial_figure(self):
-        t = arange(-5.0,5.0,0.01)
-        s = sin(2*pi*t)
-        self.axes.plot(t, s)
-
-x = np.arange(0, 2*np.pi, 0.01)
 
 
 class MyDynamicMplCanvas(MyMplCanvas):
@@ -52,56 +43,16 @@ class MyDynamicMplCanvas(MyMplCanvas):
 
     def __init__(self, *args, **kwargs):
         MyMplCanvas.__init__(self, *args, **kwargs)
-        self.line, = self.axes.plot(x, np.sin(x))
-        # timer = QtCore.QTimer(self)
-        # timer.timeout.connect(tb._on_timer)
-        # #
-        #
-        #
-        # timer3 = QtCore.QTimer(self)
-        # timer3.timeout.connect(tb._on_timer)
-        # timer.start(10000)
-        # timer3.start(10000)
-
-        ####################
-        #self.x = arange(0,2*pi, 0.01)
-        #self.line, = self.axes.plot(self.x, sin(self.x))
 
     def compute_initial_figure(self):
         #self.axes.plot([0, 1, 2, 3], [1, 2, 0, 4], 'r')
         pass
 
     def update_figure(self, i):
-        # Build a list of 4 random integers between 0 and 10 (both inclusive)
-        #l = [random.randint(0, 10) for i in range(4)]
-        #t = arange(0.0,5.0,0.01)
-        #s = sin(2*pi*t)
-        # self.axes.clear()
-        # self.axes.plot(t, s)
-
-        #self.axes.clear()
-        self.line.set_ydata(np.sin(x + i/10.0))  # update the data
-        return self.line,
-
-    def animate(self, i):
-        # Build a list of 4 random integers between 0 and 10 (both inclusive)
-        #l = [random.randint(0, 10) for i in range(4)]
-        #t = arange(0.0,5.0,0.01)
         pass
-        #self.line.set_ydata(np.sin(self.x + i/10.0))  # update the data
-       # return self.line,
-        # self.axes.clear()
-        #self.axes.plot([1,2,3,4], l)
-
-        #self.axes.clear()
-        #datetimes = [datetime.datetime.strptime(t, "%H:%M:%S") for t in time]
-        #datetimes = [datetime.datetime.strptime(time,"%H:%M:%S") for t in datetime]
-        #self.axes.plot(l,sin(pi*l))
-        #self.draw()
 
     def init(self):
-        self.line.set_ydata(np.ma.array(x, mask=True))
-        return self.line,
+        pass
 
 
 
@@ -111,30 +62,9 @@ class AnimationWidget(QtWidgets.QWidget):
 
         vbox = QtWidgets.QVBoxLayout()
         self.canvas = MyMplCanvas(self, width=7, height=4, dpi=100)
-        #vbox.addWidget(self.canvas)
-
-        # hbox = QtWidgets.QHBoxLayout()
-        # self.start_button = QtWidgets.QPushButton("start", self)
-        # self.stop_button = QtWidgets.QPushButton("stop", self)
-
-
-        #######################################
-
-
-
-
         self.navi_toolbar = NavigationToolbar(self.canvas, self)
         vbox.addWidget(self.navi_toolbar)
         vbox.addWidget(self.canvas)
-
-
-        ###############################
-
-        #self.start_button.clicked.connect(self.on_start)
-        #self.stop_button.clicked.connect(self.on_stop)
-        #hbox.addWidget(self.start_button)
-        #hbox.addWidget(self.stop_button)
-        #vbox.addLayout(hbox)
         self.setLayout(vbox)
 
         self.x = np.linspace(0, 5, 400)
@@ -143,28 +73,7 @@ class AnimationWidget(QtWidgets.QWidget):
         #self.y = np.linspace(0, 1, 400)
         self.line, = self.canvas.axes.plot(self.x, self.y, animated=True, lw=2)
 
-
-
-
         self.ani = ControlFuncAnimation(self.canvas.figure, self.update_line, blit=True, interval=25)
-
-        # self.canvas.axes.set_xlabel('Time')
-        # self.canvas.axes.set_ylabel('Force')
-        #
-        # self.xar = [0]
-        # self.yar = [0]
-        # self.line, = self.canvas.axes.plot(self.xar, self.yar)
-        #
-        # self.ani = ControlFuncAnimation(self.canvas.figure, self.update_line, blit=True, interval=25)
-
-
-
-
-
-
-
-
-
 
     def update_line(self, i):
         self.p += 0.1
@@ -174,16 +83,12 @@ class AnimationWidget(QtWidgets.QWidget):
         return [self.line]
 
     def on_start(self):
-        #self.ani = ControlFuncAnimation(self.canvas.figure, self.update_line, blit=True, interval=25)
         self.ani._start()
 
 
     def on_stop(self):
         self.ani._stop()
 
-    def onClick(self, event):
-        global pause
-        pause ^= True
 
 class MainUI:
     def __init__(self, MainWindow):
@@ -246,26 +151,11 @@ class MainUI:
         hbox.addWidget(self.stop_button)
         self.verticalLayout_2.addLayout(hbox)
 
-
-        ##l = QtWidgets.QVBoxLayout(self.centralwidget)
-        # sc = MyStaticMplCanvas(self.centralwidget, width=7, height=4, dpi=100)
-        # dc = MyDynamicMplCanvas(self.centralwidget, width=7, height=4, dpi=100)
-        # self.verticalLayout_2.addWidget(sc)
-        # self.verticalLayout_2.addWidget(dc)
         test = AnimationWidget()
         self.verticalLayout_2.addWidget(test)
         self.start_button.clicked.connect(test.on_start)
         self.stop_button.clicked.connect(test.on_stop)
 
-        #ani = animation.FuncAnimation(dc.figure, dc.update_figure, interval = 5)
-        #ani = animation.FuncAnimation(dc.figure, dc.update_figure,
-         #                     interval=5)
-        #ani = animation.FuncAnimation(dc.figure, np.arange(1, 200), init_func=dc.init,
-         #                     interval=25, blit=True)
-        #dc.figure.canvas.draw()
-
-       # cid = self.centralwidget.keyPressEvent()
-        ########################
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -279,38 +169,6 @@ class MainUI:
         self.actionAbout.setText(_translate("MainWindow", "About"))
         self.start_button.setText(_translate("MainWindow", "start"))
         self.stop_button.setText(_translate("MainWindow", "stop"))
-
-
-
-    # def startAnimation(self, widget):
-    #     widget.ani = animation.FuncAnimation(widget.canvas.figure, widget.update_line, blit=True, interval=25)
-
-    # def keyPressEvent(MainWindow, event):
-    #     if event.key() == QtCore.Qt.Key_Q:
-    #         MainWindow.close()
-
-
-    # def keyPressEvent(self, qKeyEvent):
-    #         print ("hi")
-    #         print(qKeyEvent.key())
-    #         if qKeyEvent.key() == QtCore.Qt.Key_Return:
-    #             print('Enter pressed')
-    #         else:
-    #             super(MainUI, self).keyPressEvent(qKeyEvent)
-
-# -*- coding: utf-8 -*-
-# """
-# Some Independent plotting tools, mainly animation UI based.
-# """
-# __author__ = "Stuart Mumford"
-# __email__ = "stuartmumford@physics.org"
-# __all__ = ['ControlFuncAnimation', 'add_controls']
-#
-# import matplotlib.animation as animation
-# import matplotlib.pyplot as plt
-# import matplotlib.widgets as widgets
-# from mpl_toolkits.axes_grid1 import make_axes_locatable
-# import mpl_toolkits.axes_grid1.axes_size as Size
 
 class ControlFuncAnimation(animation.FuncAnimation):
     """ This is a slight modification to the animation class to allow pausing
