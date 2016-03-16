@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #
 #
 #
@@ -10,3 +11,6 @@ class TableData(table):
         self.power = inputPower
         self.energy = inputEnergy
 
+=======
+#For devel
+>>>>>>> refs/remotes/origin/devel
