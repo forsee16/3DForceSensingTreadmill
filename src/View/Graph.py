@@ -51,6 +51,7 @@ class MyDynamicMplCanvas(MyMplCanvas):
 
 
 
+
 class AnimationWidget(QtWidgets.QWidget):
     def __init__(self):
         QtWidgets.QWidget.__init__(self)
