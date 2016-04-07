@@ -1,7 +1,6 @@
 import sys
-from PyQt5 import QtCore, QtGui, QtWidgets
-from Controller.EventListener import EventListener
-from View.MainUI import MainUI
+from PyQt5 import QtWidgets
+from src.View.MainUI import MainUI
 
 
 if __name__ == "__main__":

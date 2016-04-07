@@ -1,4 +1,3 @@
-from __future__ import unicode_literals
 import matplotlib
 matplotlib.use('Qt5Agg')
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -6,50 +5,23 @@ import matplotlib.animation as animation
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
-import numpy as np
+from collections import deque
+from src.Model.DataAccesor import Data
 
 
-class MyMplCanvas(FigureCanvas):
+class MplCanvas(FigureCanvas): ## MathPlotLib canvas for plotting the graphs
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
     def __init__(self, parent=None, width=5, height=4, dpi=100):
         fig = Figure(figsize=(width, height), dpi=dpi)
         self.axes = fig.add_subplot(111)
         # We want the axes cleared every time plot() is called
         self.axes.hold(False)
-        self.compute_initial_figure()
-
-        #
         FigureCanvas.__init__(self, fig)
         self.setParent(parent)
-
         FigureCanvas.setSizePolicy(self,
                                    QtWidgets.QSizePolicy.Expanding,
                                    QtWidgets.QSizePolicy.Expanding)
         FigureCanvas.updateGeometry(self)
-
-    def compute_initial_figure(self):
-        pass
-
-
-
-
-class MyDynamicMplCanvas(MyMplCanvas):
-    """A canvas that updates itself every second with a new plot."""
-
-    def __init__(self, *args, **kwargs):
-        MyMplCanvas.__init__(self, *args, **kwargs)
-
-    def compute_initial_figure(self):
-        #self.axes.plot([0, 1, 2, 3], [1, 2, 0, 4], 'r')
-        pass
-
-    def update_figure(self, i):
-        pass
-
-    def init(self):
-        pass
-
-
 
 
 class AnimationWidget(QtWidgets.QWidget):
@@ -57,44 +29,53 @@ class AnimationWidget(QtWidgets.QWidget):
         QtWidgets.QWidget.__init__(self)
 
         vbox = QtWidgets.QVBoxLayout()
-        self.canvas = MyMplCanvas(self, width=7, height=4, dpi=100)
+        self.canvas = MplCanvas(self, width=7, height=4, dpi=100)
         self.navi_toolbar = NavigationToolbar(self.canvas, self)
         vbox.addWidget(self.navi_toolbar)
         vbox.addWidget(self.canvas)
         self.setLayout(vbox)
 
-        self.x = np.linspace(0, 5, 400)
-        self.p = 0.0
-        self.y = np.sin(self.x + self.p)
-        #self.y = np.linspace(0, 1, 400)
-        self.line, = self.canvas.axes.plot(self.x, self.y, animated=True, lw=2)
+        self.line, = self.canvas.axes.plot([], [], animated=True, lw=2)
+        self.canvas.axes.set_xlim(0, 100)
+        self.canvas.axes.set_ylim(-20, 20)
+        self.bufferSize = Data.getBufferSize() # how much of the graph is displayed
+        self.ani = ControlFuncAnimation(self.canvas.figure, self.update_graph, init_func=self.init, fargs=(self.line,), blit=True, interval=25)
 
-        self.ani = ControlFuncAnimation(self.canvas.figure, self.update_line, blit=True, interval=25)
+    # init first frame of graph to empty
+    def init(self):
+        self.line.set_data([], [])
+        return self.line,
 
-    def update_line(self, i):
-        self.p += 0.1
-        y = np.sin(self.x + self.p)
-        #y = self.y = np.linspace(0, 1, 400)
-        self.line.set_ydata(y)
-        return [self.line]
 
-    def on_start(self):
+    # this function gets called by FuncAnimation at specified intervals (specified in the ControlFuncAnimation)
+    # frame is an int which starts at 0
+    def update_graph(self, frame, a0):
+        #x = np.linspace(0, 20, 1000)
+        #y = np.sin(x - 0.01 *frame) #
+        #data = self.readSerial() # data read from the serial port
+        data = Data.getData()
+        self.line.set_data(range(self.bufferSize), data) # x is unchanging
+        return self.line,
+
+    #start plotting points
+    def start(self):
+        Data.startCollecting()
         self.ani._start()
 
-
-    def on_stop(self):
+    #stop plotting
+    def stop(self):
         self.ani._stop()
+
+    def plot(self):
+        pass
+
 
 class ControlFuncAnimation(animation.FuncAnimation):
     """ This is a slight modification to the animation class to allow pausing
-    starting and stopping.
-
-    .. todo::
-        improve documentation
-    """
+    starting and stopping."""
     def __init__(self, fig, func, frames=None, init_func=None, fargs=None,
             save_count=None, auto_start=False, **kwargs):
-        self.fig = fig #This should be done.
+        self.fig = fig # fig is an instance of the MplCanvas class
         animation.FuncAnimation.__init__(self, fig, func, frames=frames,
                                          init_func=init_func, fargs=fargs,
                                          save_count=save_count, **kwargs)

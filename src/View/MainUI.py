@@ -4,7 +4,8 @@ import matplotlib
 matplotlib.use('Qt5Agg')
 from numpy import arange, sin, pi
 from PyQt5 import QtCore, QtGui, QtWidgets
-from .Graph import AnimationWidget
+from src.View.Graph import AnimationWidget
+from src.View.Table import TableModel
 
 
 
@@ -58,8 +59,6 @@ class MainUI:
 
         ########################
 
-
-
         hbox = QtWidgets.QHBoxLayout()
         self.start_button = QtWidgets.QPushButton(self.centralwidget)
         self.start_button.setObjectName("start")
@@ -72,11 +71,14 @@ class MainUI:
         hbox.addWidget(self.stop_button)
         self.verticalLayout_2.addLayout(hbox)
 
-        test = AnimationWidget()
-        self.verticalLayout_2.addWidget(test)
-        self.start_button.clicked.connect(test.on_start)
-        self.stop_button.clicked.connect(test.on_stop)
+        self.graph = AnimationWidget()
+        self.verticalLayout_2.addWidget(self.graph)
+        self.start_button.clicked.connect(self.graph.start)
+        self.stop_button.clicked.connect(self.graph.stop)
+        model = TableModel()
+        self.tableView.setModel(model)
 
+        #######################
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -90,6 +92,4 @@ class MainUI:
         self.actionAbout.setText(_translate("MainWindow", "About"))
         self.start_button.setText(_translate("MainWindow", "start"))
         self.stop_button.setText(_translate("MainWindow", "stop"))
-
-
 
