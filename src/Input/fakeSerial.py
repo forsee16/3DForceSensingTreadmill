@@ -1,6 +1,7 @@
 import random
 import time
 import threading
+from numpy import sin
 
 # A class that simulates a fake Arduino serial port
 
@@ -51,8 +52,9 @@ class Serial:
 
     ## close()
     # closes the port
-    def close( self ):
-        self._isOpen = False
+    @classmethod
+    def close( klass ):
+        klass._isOpen = False
 
     ## write()
     # writes a string of characters to the Arduino
@@ -101,16 +103,20 @@ class Serial:
         threading._start_new_thread(klass.writeRandom, ())
 
 
-    ## writes random numbers between 0 and 10 to port every 1/500 second
+
+    ## writes random numbers between 0 and 10 to port every 1/50 second
     @classmethod
     def writeRandom(klass):
         i = 1.0
-        while True:
-            #num = random.random()*10
-            num = i % 11.0
+        while i < 500: ## collects data for 10 seconds then closes port
+            #num = random.random()*20
+            #num = i
+            num = sin(i*.1)*20
             i += 1
             klass.write(str(num) + "\n")
+            time.sleep(1/50)
+        klass.close()
 
-            time.sleep(1/500)
+
 
 

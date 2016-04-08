@@ -7,13 +7,14 @@ from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as Navigatio
 from matplotlib.figure import Figure
 from collections import deque
 from src.Model.DataAccesor import Data
-
+import time
 
 class MplCanvas(FigureCanvas): ## MathPlotLib canvas for plotting the graphs
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
-    def __init__(self, parent=None, width=5, height=4, dpi=100):
-        fig = Figure(figsize=(width, height), dpi=dpi)
-        self.axes = fig.add_subplot(111)
+    def __init__(self, parent=None, width=5, height=4):
+        fig = Figure(figsize=(width, height), facecolor= "white")
+        self.axes = fig.add_subplot(1,1,1)
+
         # We want the axes cleared every time plot() is called
         self.axes.hold(False)
         FigureCanvas.__init__(self, fig)
@@ -23,13 +24,12 @@ class MplCanvas(FigureCanvas): ## MathPlotLib canvas for plotting the graphs
                                    QtWidgets.QSizePolicy.Expanding)
         FigureCanvas.updateGeometry(self)
 
-
 class AnimationWidget(QtWidgets.QWidget):
     def __init__(self):
         QtWidgets.QWidget.__init__(self)
 
         vbox = QtWidgets.QVBoxLayout()
-        self.canvas = MplCanvas(self, width=7, height=4, dpi=100)
+        self.canvas = MplCanvas(self, width=7, height=4)
         self.navi_toolbar = NavigationToolbar(self.canvas, self)
         vbox.addWidget(self.navi_toolbar)
         vbox.addWidget(self.canvas)
@@ -37,10 +37,9 @@ class AnimationWidget(QtWidgets.QWidget):
 
         self.line, = self.canvas.axes.plot([], [], animated=True, lw=2)
         self.canvas.axes.set_xlim(0, 100)
-        self.canvas.axes.set_ylim(-20, 20)
-        self.bufferSize = Data.getBufferSize() # how much of the graph is displayed
-        self.ani = ControlFuncAnimation(self.canvas.figure, self.update_graph, init_func=self.init, fargs=(self.line,), blit=True, interval=25)
-
+        self.canvas.axes.set_ylim(-50, 50)
+        self.ani = ControlFuncAnimation(self.canvas.figure, self.update_graph, init_func=self.init, blit=True, interval=25)
+        Data.signal.doneCollecting.connect(self.stop) ## the stop() function will get called when a doneCollecting singal is received
     # init first frame of graph to empty
     def init(self):
         self.line.set_data([], [])
@@ -48,13 +47,17 @@ class AnimationWidget(QtWidgets.QWidget):
 
 
     # this function gets called by FuncAnimation at specified intervals (specified in the ControlFuncAnimation)
-    # frame is an int which starts at 0
-    def update_graph(self, frame, a0):
+    def update_graph(self, i):
         #x = np.linspace(0, 20, 1000)
         #y = np.sin(x - 0.01 *frame) #
         #data = self.readSerial() # data read from the serial port
         data = Data.getData()
-        self.line.set_data(range(self.bufferSize), data) # x is unchanging
+        #startTime = time.time()
+        self.line.set_data(range(len(data)), data) # x is unchanging
+        #finishTime = time.time() - startTime
+        #self.average += finishTime
+        #self.average /= (i+1)
+        #print(finishTime)
         return self.line,
 
     #start plotting points

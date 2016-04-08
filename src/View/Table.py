@@ -1,5 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from src.Model.DataAccesor import Data
+from collections import deque
 
 class TableModel(QtCore.QAbstractTableModel):
 
@@ -8,15 +9,15 @@ class TableModel(QtCore.QAbstractTableModel):
         super(TableModel, self).__init__()
         self.data_list = data_list
         self.header = ['Number']
-        #self.timer1 = QtCore.QTimer()
-        Data.signal.startedCollecting.connect(self.getData)
-        self.timer2 = QtCore.QTimer()
-        self.timer2.timeout.connect(self.insertRow)
-        #self.timer1.start(1000)
-        self.timer2.start(100)
-        self.numOfRows = 15
-        self.rowsInserted.connect(self.increaseRowByOne)
-        self.onece = False
+        self.numOfRows = 10
+        #self.timer = QtCore.QTimer()
+        #self.timer.timeout.connect(self.insertRow)
+        self.dataUpdatTimer = QtCore.QTimer()
+        self.dataUpdatTimer.timeout.connect(self.updateData)
+        #self.rowsInserted.connect(self.increaseRowByOne)
+        self.dataUpdatTimer.timeout.connect(self.insertRow)
+        Data.signal.startedCollecting.connect(self.startDataUpdateTimer)
+        #self.dataChanged.connect(self.getData)
 
 
     def rowCount(self, QModelIndex_parent=None, *args, **kwargs):
@@ -32,6 +33,7 @@ class TableModel(QtCore.QAbstractTableModel):
             return None
         elif QModelIndex.row() >= len(self.data_list):
             return None
+        #print(self.data_list)
         return self.data_list[QModelIndex.row()]
 
 
@@ -46,30 +48,39 @@ class TableModel(QtCore.QAbstractTableModel):
         colNum = self.columnCount(QModelIndex_parent) -1
         indx = self.index(rowNum, colNum, QtCore.QModelIndex())
         strr = self.data(indx,QtCore.Qt.DisplayRole)
-        if (strr == None):
+        if (strr == None): ## check last row is non empty before adding new ones
             return False
         newRow = 1
-        self.beginInsertRows(QtCore.QModelIndex(), 1, 1)
+        self.beginInsertRows(QtCore.QModelIndex(), 0, 0)
         self.endInsertRows()
+        self.increaseRowByOne()
         return True
 
 
 
-    # def insertData(self):
-    #     #data = Data.getData()
-    #     topLeft = self.createIndex(0,0)
-    #     rowNum = self.rowCount()
-    #     colNum = self.columnCount()
-    #     bottomRight = self.createIndex(rowNum,colNum)
-    #     self.dataChanged.emit(topLeft,bottomRight)
+    def updateData(self):
+        self.getData()
+        topLeft = self.createIndex(0,0)
+        rowNum = self.numOfRows
+        colNum = self.columnCount()
+        bottomLeft = self.createIndex(rowNum,colNum)
+        self.dataChanged.emit(bottomLeft, bottomLeft)
+
 
     def getData(self):
-        self.data_list = Data.getData()
+        data = deque(Data.dataBuffer)
+        data.reverse()
+        #temp = Data.getData()
+        #temp.reverse()
+        self.data_list = data
 
 
     def increaseRowByOne(self):
         self.numOfRows += 1
 
+    def startDataUpdateTimer(self):
+        self.getData()
+        self.dataUpdatTimer.start(100)
 
 
 

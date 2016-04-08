@@ -62,7 +62,7 @@ class MainUI:
         hbox = QtWidgets.QHBoxLayout()
         self.start_button = QtWidgets.QPushButton(self.centralwidget)
         self.start_button.setObjectName("start")
-        self.start_button.adjustSize()
+        #self.start_button.adjustSize()
         self.stop_button = QtWidgets.QPushButton(self.centralwidget)
         self.start_button.setObjectName("stop")
 
@@ -77,6 +77,10 @@ class MainUI:
         self.stop_button.clicked.connect(self.graph.stop)
         model = TableModel()
         self.tableView.setModel(model)
+
+        #self.verticalLayout_1.setGeometry(self.tableView.geometry())
+
+
 
         #######################
 
