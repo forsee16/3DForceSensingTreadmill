@@ -39,8 +39,6 @@ class Data():
             print(Data.tableDataBuffer)
             klass.saveData()
 
-
-
     # add plot points to buffer.
     # appends left for the graph buffer and right for the table buffer
     @classmethod

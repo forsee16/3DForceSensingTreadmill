@@ -63,15 +63,16 @@ class MainUI:
         self.start_button.setObjectName("start")
         self.stop_button = QtWidgets.QPushButton(self.centralwidget)
         self.start_button.setObjectName("stop")
-        # self.stop_button.setMaximumWidth(50)
-        # self.start_button.setMaximumWidth(50)
+        self.load_button = QtWidgets.QPushButton(self.centralwidget)
+        self.load_button.setObjectName("load")
+
 
 
 
         hbox.addWidget(self.start_button)
         hbox.addWidget(self.stop_button)
-        #hbox.setGeometry(QtCore.QRect(0, 0, 1, 1))
-        self.verticalLayout_2.addLayout(hbox) ## add horizontal layoyt (icludes 2 buttons) on the vertical layout on the right
+        hbox.addWidget(self.load_button)
+        self.verticalLayout_2.addLayout(hbox) ## add horizontal layoyt (includes 3 buttons) on the vertical layout on the right
 
         self.graph = AnimationWidget()
         self.verticalLayout_2.addWidget(self.graph) ## add graph to vertical layout on the right
@@ -99,4 +100,5 @@ class MainUI:
         self.actionAbout.setText(_translate("MainWindow", "About"))
         self.start_button.setText(_translate("MainWindow", "start"))
         self.stop_button.setText(_translate("MainWindow", "stop"))
+        self.load_button.setText(_translate("MainWindow", "load"))
 
