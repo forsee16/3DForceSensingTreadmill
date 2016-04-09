@@ -67,7 +67,7 @@ class TableModel(QtCore.QAbstractTableModel):
 
 
     def getData(self):
-        data = deque(Data.dataBuffer)
+        data = deque(Data.tableDataBuffer)
         data.reverse()
         if (self.indx < len(data)):
             self.data_list.append(data[self.indx])

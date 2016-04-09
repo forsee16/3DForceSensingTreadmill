@@ -57,7 +57,8 @@ class AnimationWidget(QtWidgets.QWidget):
         #x = np.linspace(0, 20, 1000)
         #y = np.sin(x - 0.01 *frame) #
         #data = self.readSerial() # data read from the serial port
-        data = Data.getData()
+        Data.getData()
+        data = Data.graphDataBuffer
         self.line.set_data(range(len(data)), data) # x is unchanging
         return self.line,
 

@@ -15,7 +15,8 @@ class Signal(QObject):
 class Data():
     # bufferSize = 500
     ## deque(iterable, maxlen)
-    dataBuffer = deque()  # using deque becuase appending and removing performace is O(1) comparaed to lists performance O(n)
+    graphDataBuffer = deque()  # using deque becuase appending and removing performace is O(1) comparaed to lists performance O(n)
+    tableDataBuffer = deque()
     signal = Signal()
     count = 0
 
@@ -30,21 +31,26 @@ class Data():
     def getData(klass):
         if (Serial._isOpen):
             data = Serial.readline()
-            klass.addToBuf(klass.dataBuffer, data)
+            klass.addToBuf(klass.graphDataBuffer, data)
+            if (klass.count % 5 == 0):
+                klass.addToBuf(klass.tableDataBuffer, data)
         else:
             klass.signal.finishedCollecting.emit() ## emit signal so that the graph class knows when to stop plotting
-        return klass.dataBuffer
+            print(Data.graphDataBuffer)
+            print(Data.tableDataBuffer)
 
 
     # add plot points to buffer
     @classmethod
     def addToBuf(klass, buf, val):
         buf.appendleft(val)
-        klass.count += 1
+        klass.count +=1
+
 
     @classmethod
     def reset(klass):
-        klass.dataBuffer.clear()
+        klass.graphDataBuffer.clear()
+        klass.tableDataBuffer.clear()
         Serial.close()
         klass.signal.resetPort.emit()
 
