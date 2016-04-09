@@ -18,17 +18,21 @@ void loop() {
   int sensorValue = analogRead(A0);
   // Convert sensorValue into digital voltage
   float voltage = sensorValue * (5.0 / 1023.0);
+  float averageVoltage = 0.99*averageVoltage + .01*voltage;
+  
+  
 
   //Check to see if it is time to print again.
   if(millis() > time + time_step){
-    float load = analogToLoad(voltage);
+    float load = analogToLoad(averageVoltage);
 
     // Print the current load
-    Serial.println(load);
+    Serial.print(load);Serial.print(",");Serial.println(time);
     time = millis();
   }
 }
-  
+
+// Changes the values of   
 float analogToLoad(float analogVal){
     float load = mapFloat(analogVal, analogValA, analogValB, loadA, loadB);
     return load;
