@@ -31,10 +31,10 @@ class MainUI:
         self.tableView = QtWidgets.QTableView(self.centralwidget)
         self.tableView.setObjectName("tableView")
         self.verticalLayout_1.addWidget(self.tableView)
-        self.horizontalLayout.addLayout(self.verticalLayout_1)
+        self.horizontalLayout.addLayout(self.verticalLayout_1, 1)
         self.verticalLayout_2 = QtWidgets.QVBoxLayout()
         self.verticalLayout_2.setObjectName("verticalLayout_2")
-        self.horizontalLayout.addLayout(self.verticalLayout_2)
+        self.horizontalLayout.addLayout(self.verticalLayout_2, 5)
         self.centralWidgetLayout.addLayout(self.horizontalLayout)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
@@ -56,7 +56,6 @@ class MainUI:
         self.menuHelp.addAction(self.actionAbout)
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuHelp.menuAction())
-
         ########################
 
         hbox = QtWidgets.QHBoxLayout()
@@ -65,20 +64,26 @@ class MainUI:
         #self.start_button.adjustSize()
         self.stop_button = QtWidgets.QPushButton(self.centralwidget)
         self.start_button.setObjectName("stop")
+        # self.stop_button.setMaximumWidth(50)
+        # self.start_button.setMaximumWidth(50)
+        #self.start_button.s
+
 
 
         hbox.addWidget(self.start_button)
         hbox.addWidget(self.stop_button)
-        self.verticalLayout_2.addLayout(hbox)
+        #hbox.setGeometry(QtCore.QRect(0, 0, 1, 1))
+        self.verticalLayout_2.addLayout(hbox) ## add horizontal layoyt (icludes 2 buttons) on the vertical layout on the right
 
         self.graph = AnimationWidget()
-        self.verticalLayout_2.addWidget(self.graph)
+        self.verticalLayout_2.addWidget(self.graph) ## add graph to vertical layout on the right
         self.start_button.clicked.connect(self.graph.start)
         self.stop_button.clicked.connect(self.graph.stop)
         model = TableModel()
         self.tableView.setModel(model)
 
         #self.verticalLayout_1.setGeometry(self.tableView.geometry())
+
 
 
 

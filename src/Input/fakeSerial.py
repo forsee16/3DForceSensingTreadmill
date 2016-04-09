@@ -109,9 +109,9 @@ class Serial:
     def writeRandom(klass):
         i = 1.0
         while i < 500: ## collects data for 10 seconds then closes port
-            #num = random.random()*20
+            num = random.random()*20
             #num = i
-            num = sin(i*.1)*20
+            #num = sin(i*.1)*20
             i += 1
             klass.write(str(num) + "\n")
             time.sleep(1/50)

@@ -15,6 +15,7 @@ class MplCanvas(FigureCanvas): ## MathPlotLib canvas for plotting the graphs
         fig = Figure(figsize=(width, height), facecolor= "white")
         self.axes = fig.add_subplot(1,1,1)
 
+
         # We want the axes cleared every time plot() is called
         self.axes.hold(False)
         FigureCanvas.__init__(self, fig)
@@ -38,6 +39,10 @@ class AnimationWidget(QtWidgets.QWidget):
         self.line, = self.canvas.axes.plot([], [], animated=True, lw=2)
         self.canvas.axes.set_xlim(0, 100)
         self.canvas.axes.set_ylim(-50, 50)
+        #self.canvas.axes.autoscale(enable=False, axis='both', tight=False)
+        self.canvas.axes.set_xlabel('Time')
+        self.canvas.axes.set_ylabel('Data')
+
         self.ani = ControlFuncAnimation(self.canvas.figure, self.update_graph, init_func=self.init, blit=True, interval=25)
         Data.signal.doneCollecting.connect(self.stop) ## the stop() function will get called when a doneCollecting singal is received
     # init first frame of graph to empty

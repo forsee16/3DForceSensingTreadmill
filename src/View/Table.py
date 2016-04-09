@@ -5,10 +5,9 @@ from collections import deque
 class TableModel(QtCore.QAbstractTableModel):
 
 
-    def __init__(self, header=[], data_list=[]):
+    def __init__(self, header=[]):
         super(TableModel, self).__init__()
-        self.data_list = data_list
-        self.header = ['Number']
+        self.header = ['Data']
         self.numOfRows = 10
         #self.timer = QtCore.QTimer()
         #self.timer.timeout.connect(self.insertRow)
@@ -18,6 +17,9 @@ class TableModel(QtCore.QAbstractTableModel):
         self.dataUpdatTimer.timeout.connect(self.insertRow)
         Data.signal.startedCollecting.connect(self.startDataUpdateTimer)
         #self.dataChanged.connect(self.getData)
+        self.indx = 0
+        #self.test = deque([])
+        self.data_list = deque([])
 
 
     def rowCount(self, QModelIndex_parent=None, *args, **kwargs):
@@ -34,6 +36,7 @@ class TableModel(QtCore.QAbstractTableModel):
         elif QModelIndex.row() >= len(self.data_list):
             return None
         #print(self.data_list)
+        #point = self.data_list[int]
         return self.data_list[QModelIndex.row()]
 
 
@@ -63,7 +66,7 @@ class TableModel(QtCore.QAbstractTableModel):
         topLeft = self.createIndex(0,0)
         rowNum = self.numOfRows
         colNum = self.columnCount()
-        bottomLeft = self.createIndex(rowNum,colNum)
+        bottomLeft = self.createIndex(rowNum,rowNum)
         self.dataChanged.emit(bottomLeft, bottomLeft)
 
 
@@ -72,7 +75,12 @@ class TableModel(QtCore.QAbstractTableModel):
         data.reverse()
         #temp = Data.getData()
         #temp.reverse()
-        self.data_list = data
+        #self.data_list = data
+        temp = len(data)
+        boool = self.indx >= temp
+        if ( not boool):
+            self.data_list.append(data[self.indx])
+            self.indx += 5
 
 
     def increaseRowByOne(self):
@@ -80,7 +88,7 @@ class TableModel(QtCore.QAbstractTableModel):
 
     def startDataUpdateTimer(self):
         self.getData()
-        self.dataUpdatTimer.start(100)
+        self.dataUpdatTimer.start(1/50)
 
 
 
