@@ -58,7 +58,7 @@ class TableModel(QtCore.QAbstractTableModel):
 
 
     def updateData(self):
-        self.getData()
+        self.data_list = Data.tableDataBuffer
         topLeft = self.createIndex(0,0)
         rowNum = self.numOfRows
         colNum = self.columnCount()
@@ -66,19 +66,18 @@ class TableModel(QtCore.QAbstractTableModel):
         self.dataChanged.emit(bottomLeft, bottomLeft)
 
 
-    def getData(self):
-        data = deque(Data.tableDataBuffer)
-        data.reverse()
-        if (self.indx < len(data)):
-            self.data_list.append(data[self.indx])
-            self.indx += 5
+    #def getData(self):
+        #data = Data.tableDataBuffer
+        # if (self.indx < len(data)):
+        #     self.data_list.append(data[self.indx])
+        #     self.indx += 5
 
 
     def increaseRowByOne(self):
         self.numOfRows += 1
 
     def startDataUpdateTimer(self):
-        self.getData()
+        #self.getData()
         self.dataUpdatTimer.start(1/20)
 
     def clearBuffer(self):

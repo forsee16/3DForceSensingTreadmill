@@ -7,55 +7,15 @@ from numpy import sin
 
 class Serial:
 
-    name = 'COM1'
-    port = 'COM1'
-    timeout = 1
-    parity = 'N'
-    baudrate = 19200
-    bytesize = 8
-    stopbits = 1
-    xonxoff = 0
-    rtscts = 0
-    _isOpen = False
+    isOpen = False
     _data = ""
     timerCounter = 1
-
-    ## init(): the constructor.  Many of the arguments have default values
-    # and can be skipped when calling the constructor.
-    # def __init__( self, port='COM1', baudrate = 19200, timeout=1,
-    #               bytesize = 8, parity = 'N', stopbits = 1, xonxoff=0,
-    #               rtscts = 0):
-    #     self.name     = port
-    #     self.port     = port
-    #     self.timeout  = timeout
-    #     self.parity   = parity
-    #     self.baudrate = baudrate
-    #     self.bytesize = bytesize
-    #     self.stopbits = stopbits
-    #     self.xonxoff  = xonxoff
-    #     self.rtscts   = rtscts
-    #     self._isOpen  = True
-    #     #self._receivedData = ""
-    #     self._data = ""
-
-
-    ## isOpen()
-    # returns True if the port to the Arduino is open.  False otherwise
-    @classmethod
-    def isOpen( klass ):
-        return klass._isOpen
-
-    ## open()
-    # opens the port
-    @classmethod
-    def open( klass ):
-        klass._isOpen = True
 
     ## close()
     # closes the port
     @classmethod
-    def close( klass ):
-        klass._isOpen = False
+    def close(klass):
+        klass.isOpen = False
         klass.timerCounter = 0
 
     ## write()
@@ -72,7 +32,6 @@ class Serial:
     def read( klass, n=1 ):
         s = klass._data[0:n]
         klass._data = klass._data[n:]
-        #print( "read: now self._data = ", self._data )
         return s
 
     ## readline()
@@ -87,24 +46,12 @@ class Serial:
         else:
             return ""
 
-    ## __str__()
-    # returns a string representation of the serial class
-    @classmethod
-    def __str__( klass ):
-        return  "Serial<id=0xa81c10, open=%s>( port='%s', baudrate=%d," \
-               % ( str(klass.isOpen), klass.port, klass.baudrate ) \
-               + " bytesize=%d, parity='%s', stopbits=%d, xonxoff=%d, rtscts=%d)"\
-               % ( klass.bytesize, klass.parity, klass.stopbits, klass.xonxoff,
-                   klass.rtscts )
-
 
     ## a function that starts writing random numbers to port by invoking writeRandom() in a new thread (as not to block other functions)
     @classmethod
     def start(klass):
-        klass.open()
+        klass.isOpen = True
         threading._start_new_thread(klass.writeRandom, ())
-
-
 
     ## writes random numbers between 0 and 10 to port every 1/50 second
     @classmethod

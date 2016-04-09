@@ -18,33 +18,34 @@ class Data():
     graphDataBuffer = deque()  # using deque becuase appending and removing performace is O(1) comparaed to lists performance O(n)
     tableDataBuffer = deque()
     signal = Signal()
-    count = 0
 
     @classmethod
     def startCollecting(klass):
-        if not Serial.isOpen():
-            Serial.start()  ## opens up a fake serial port and starts writing random data to it (#port only collects for 10 seconds)
-            time.sleep(1 / 100)  ## give time for the port to start up befre emmiting the sginal
-            klass.signal.startedCollecting.emit()  ## emit signal to indicate that model started collecting data
+        Serial.start()  ## opens up a fake serial port and starts writing random data to it (#port only collects for 10 seconds)
+        time.sleep(1 / 100)  ## give time for the port to start up befre emmiting the sginal
+        klass.signal.startedCollecting.emit()  ## emit signal to indicate that model started collecting data
 
     @classmethod
-    def getData(klass):
-        if (Serial._isOpen):
+    def updateBuffers(klass):
+        if (Serial.isOpen):
             data = Serial.readline()
-            klass.addToBuf(klass.graphDataBuffer, data)
-            if (klass.count % 5 == 0):
-                klass.addToBuf(klass.tableDataBuffer, data)
+            if (len(klass.graphDataBuffer) % 4 == 0):
+                klass.addToBuf(klass.tableDataBuffer, data, True)
+            klass.addToBuf(klass.graphDataBuffer, data, False)
         else:
             klass.signal.finishedCollecting.emit() ## emit signal so that the graph class knows when to stop plotting
             print(Data.graphDataBuffer)
             print(Data.tableDataBuffer)
 
 
-    # add plot points to buffer
+    # add plot points to buffer.
+    # appends left for the graph buffer and right for the table buffer
     @classmethod
-    def addToBuf(klass, buf, val):
-        buf.appendleft(val)
-        klass.count +=1
+    def addToBuf(klass, buf, val, isAppendRight):
+        if(isAppendRight):
+            buf.append(val)
+        else:
+            buf.appendleft(val)
 
 
     @classmethod
