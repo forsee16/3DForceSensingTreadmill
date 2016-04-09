@@ -2,6 +2,7 @@ from src.Input.fakeSerial import Serial
 from collections import deque
 from PyQt5.QtCore import pyqtSignal, QObject
 import time
+import csv
 
 
 ## inheriting from QObject allows the class to emit signals that indicate model has started collecting data
@@ -36,6 +37,8 @@ class Data():
             klass.signal.finishedCollecting.emit() ## emit signal so that the graph class knows when to stop plotting
             print(Data.graphDataBuffer)
             print(Data.tableDataBuffer)
+            klass.saveData()
+
 
 
     # add plot points to buffer.
@@ -55,3 +58,10 @@ class Data():
         Serial.close()
         klass.signal.resetPort.emit()
 
+    @classmethod
+    def saveData(klass):
+        with open("force.csv", 'w') as forceFile:
+            forceWriter = csv.writer(forceFile, delimiter=' ',
+                                quotechar='|', quoting=csv.QUOTE_MINIMAL)
+            for eachEntry in list(klass.tableDataBuffer):
+                forceWriter.writerow([eachEntry])
