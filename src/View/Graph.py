@@ -8,6 +8,7 @@ from matplotlib.figure import Figure
 from collections import deque
 from src.Model.DataAccesor import Data
 import time
+import csv
 
 class MplCanvas(FigureCanvas): ## MathPlotLib canvas for plotting the graphs
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
@@ -51,6 +52,27 @@ class AnimationWidget(QtWidgets.QWidget):
         self.line.set_data([], [])
         return self.line,
 
+    def loadData(self):
+        x=[]
+        y=[]
+        even=True
+        with open('force.csv', 'r') as csvfile:
+            csvreader = csv.reader(csvfile, delimiter=',', quotechar='|')
+            for row in csvreader:
+                if(even):
+                    y.append( float(row[0]))
+                even = not even
+
+
+        counter =0
+        counterVal = 0
+
+        while(counter<len(y)):
+            x.append(counterVal)
+            counterVal = counterVal +0.125
+            counter = counter +1
+
+        self.line.set_data(x,y)
 
     # this function gets called by FuncAnimation at specified intervals (specified in the ControlFuncAnimation)
     def update_graph(self, i):
