@@ -42,7 +42,7 @@ class AnimationWidget(QtWidgets.QWidget):
         #self.canvas.axes.autoscale(enable=False, axis='both', tight=False)
         self.canvas.axes.set_xlabel('Time (s)')
         self.canvas.axes.set_ylabel('Data')
-
+        #self.dataBuffer
         self.ani = ControlFuncAnimation(self.canvas.figure, self.update_graph, init_func=self.init, blit=True, interval=25)
         Data.signal.finishedCollecting.connect(self.stop) ## the stop() function will get called when a doneCollecting singal is received
 
@@ -71,6 +71,7 @@ class AnimationWidget(QtWidgets.QWidget):
     #stop plotting
     def stop(self):
         self.ani._stop()
+        #self.line.set_data(range(len(self.data)), data)
 
     def plot(self):
         pass

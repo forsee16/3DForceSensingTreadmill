@@ -81,11 +81,6 @@ class MainUI:
         model = TableModel()
         self.tableView.setModel(model)
 
-
-
-
-
-
         #######################
 
         self.retranslateUi(MainWindow)
