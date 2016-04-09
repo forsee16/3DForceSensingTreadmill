@@ -7,16 +7,15 @@ import time
 ## inheriting from QObject allows the class to emit signals that indicate model has started collecting data
 class Signal(QObject):
     startedCollecting = pyqtSignal()
-    doneCollecting = pyqtSignal()
-    stopCollecting = pyqtSignal()
+    finishedCollecting = pyqtSignal()
+    resetPort = pyqtSignal()
 
 
 # class is static so that the table and graph classes have access to the same data
 class Data():
     # bufferSize = 500
     ## deque(iterable, maxlen)
-    dataBuffer = deque(
-        [0.0])  # using deque becuase appending and removing performace is O(1) comparaed to lists performance O(n)
+    dataBuffer = deque()  # using deque becuase appending and removing performace is O(1) comparaed to lists performance O(n)
     signal = Signal()
     count = 0
 
@@ -33,12 +32,9 @@ class Data():
             data = Serial.readline()
             klass.addToBuf(klass.dataBuffer, data)
         else:
-            klass.signal.doneCollecting.emit() ## emit signal so that graph class knows when to stop plotting
+            klass.signal.finishedCollecting.emit() ## emit signal so that the graph class knows when to stop plotting
         return klass.dataBuffer
 
-    # @classmethod
-    # def getBufferSize(klass):
-    #     return klass.bufferSize
 
     # add plot points to buffer
     @classmethod
@@ -49,13 +45,6 @@ class Data():
     @classmethod
     def reset(klass):
         klass.dataBuffer.clear()
-        klass.signal.stopCollecting.emit()
+        Serial.close()
+        klass.signal.resetPort.emit()
 
-
-
-        # print(buf)
-
-        # # add data
-        # @classmethod
-        # def add(klass, data):
-        #     klass.addToBuf(klass.dataBuffer, data)

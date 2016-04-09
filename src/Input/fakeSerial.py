@@ -18,6 +18,7 @@ class Serial:
     rtscts = 0
     _isOpen = False
     _data = ""
+    timerCounter = 1
 
     ## init(): the constructor.  Many of the arguments have default values
     # and can be skipped when calling the constructor.
@@ -55,6 +56,7 @@ class Serial:
     @classmethod
     def close( klass ):
         klass._isOpen = False
+        klass.timerCounter = 0
 
     ## write()
     # writes a string of characters to the Arduino
@@ -107,12 +109,10 @@ class Serial:
     ## writes random numbers between 0 and 10 to port every 1/50 second
     @classmethod
     def writeRandom(klass):
-        i = 1.0
-        while i < 500: ## collects data for 10 seconds then closes port
+        while klass.timerCounter < 500: ## collects data for 10 seconds then closes port
             num = random.random()*20
-            #num = i
-            #num = sin(i*.1)*20
-            i += 1
+            #num = sin(klass.counter*.1)*20
+            klass.timerCounter += 1
             klass.write(str(num) + "\n")
             time.sleep(1/50)
         klass.close()

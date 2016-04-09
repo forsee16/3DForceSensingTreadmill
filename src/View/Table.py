@@ -9,18 +9,13 @@ class TableModel(QtCore.QAbstractTableModel):
         super(TableModel, self).__init__()
         self.header = ['Data']
         self.numOfRows = 10
-        #self.timer = QtCore.QTimer()
-        #self.timer.timeout.connect(self.insertRow)
         self.dataUpdatTimer = QtCore.QTimer()
         self.dataUpdatTimer.timeout.connect(self.updateData)
-        #self.rowsInserted.connect(self.increaseRowByOne)
         self.dataUpdatTimer.timeout.connect(self.insertRow)
-        Data.signal.startedCollecting.connect(self.startDataUpdateTimer)
-        #self.dataChanged.connect(self.getData)
         self.indx = 0
-        #self.test = deque([])
         self.data_list = deque([])
-        Data.signal.stopCollecting.connect(self.clearBuffer)
+        Data.signal.startedCollecting.connect(self.startDataUpdateTimer)
+        Data.signal.resetPort.connect(self.clearBuffer)
 
 
     def rowCount(self, QModelIndex_parent=None, *args, **kwargs):
@@ -74,12 +69,7 @@ class TableModel(QtCore.QAbstractTableModel):
     def getData(self):
         data = deque(Data.dataBuffer)
         data.reverse()
-        #temp = Data.getData()
-        #temp.reverse()
-        #self.data_list = data
-        temp = len(data)
-        boool = self.indx >= temp
-        if ( not boool):
+        if (self.indx < len(data)):
             self.data_list.append(data[self.indx])
             self.indx += 5
 
@@ -92,6 +82,8 @@ class TableModel(QtCore.QAbstractTableModel):
         self.dataUpdatTimer.start(1/20)
 
     def clearBuffer(self):
+        self.dataUpdatTimer.stop()
+        self.indx = 0
         self.data_list.clear()
         self.beginResetModel()
         self.endResetModel()

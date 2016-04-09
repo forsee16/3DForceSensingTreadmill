@@ -61,12 +61,10 @@ class MainUI:
         hbox = QtWidgets.QHBoxLayout()
         self.start_button = QtWidgets.QPushButton(self.centralwidget)
         self.start_button.setObjectName("start")
-        #self.start_button.adjustSize()
         self.stop_button = QtWidgets.QPushButton(self.centralwidget)
         self.start_button.setObjectName("stop")
         # self.stop_button.setMaximumWidth(50)
         # self.start_button.setMaximumWidth(50)
-        #self.start_button.s
 
 
 
@@ -83,7 +81,6 @@ class MainUI:
         self.tableView.setModel(model)
 
 
-        #self.verticalLayout_1.setGeometry(self.tableView.geometry())
 
 
 

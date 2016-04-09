@@ -40,11 +40,12 @@ class AnimationWidget(QtWidgets.QWidget):
         self.canvas.axes.set_xlim(0, 100)
         self.canvas.axes.set_ylim(-50, 50)
         #self.canvas.axes.autoscale(enable=False, axis='both', tight=False)
-        self.canvas.axes.set_xlabel('Time')
+        self.canvas.axes.set_xlabel('Time (s)')
         self.canvas.axes.set_ylabel('Data')
 
         self.ani = ControlFuncAnimation(self.canvas.figure, self.update_graph, init_func=self.init, blit=True, interval=25)
-        Data.signal.doneCollecting.connect(self.stop) ## the stop() function will get called when a doneCollecting singal is received
+        Data.signal.finishedCollecting.connect(self.stop) ## the stop() function will get called when a doneCollecting singal is received
+
     # init first frame of graph to empty
     def init(self):
         self.line.set_data([], [])
@@ -57,12 +58,7 @@ class AnimationWidget(QtWidgets.QWidget):
         #y = np.sin(x - 0.01 *frame) #
         #data = self.readSerial() # data read from the serial port
         data = Data.getData()
-        #startTime = time.time()
         self.line.set_data(range(len(data)), data) # x is unchanging
-        #finishTime = time.time() - startTime
-        #self.average += finishTime
-        #self.average /= (i+1)
-        #print(finishTime)
         return self.line,
 
     #start plotting points
