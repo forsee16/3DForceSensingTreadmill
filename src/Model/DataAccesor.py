@@ -8,6 +8,7 @@ import time
 class Signal(QObject):
     startedCollecting = pyqtSignal()
     doneCollecting = pyqtSignal()
+    stopCollecting = pyqtSignal()
 
 
 # class is static so that the table and graph classes have access to the same data
@@ -44,6 +45,12 @@ class Data():
     def addToBuf(klass, buf, val):
         buf.appendleft(val)
         klass.count += 1
+
+    @classmethod
+    def reset(klass):
+        klass.dataBuffer.clear()
+        klass.signal.stopCollecting.emit()
+
 
 
         # print(buf)

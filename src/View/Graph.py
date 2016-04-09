@@ -67,6 +67,7 @@ class AnimationWidget(QtWidgets.QWidget):
 
     #start plotting points
     def start(self):
+        Data.reset()
         Data.startCollecting()
         self.ani._start()
 

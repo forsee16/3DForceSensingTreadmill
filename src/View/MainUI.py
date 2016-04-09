@@ -82,6 +82,7 @@ class MainUI:
         model = TableModel()
         self.tableView.setModel(model)
 
+
         #self.verticalLayout_1.setGeometry(self.tableView.geometry())
 
 

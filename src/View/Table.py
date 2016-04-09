@@ -20,6 +20,7 @@ class TableModel(QtCore.QAbstractTableModel):
         self.indx = 0
         #self.test = deque([])
         self.data_list = deque([])
+        Data.signal.stopCollecting.connect(self.clearBuffer)
 
 
     def rowCount(self, QModelIndex_parent=None, *args, **kwargs):
@@ -88,7 +89,12 @@ class TableModel(QtCore.QAbstractTableModel):
 
     def startDataUpdateTimer(self):
         self.getData()
-        self.dataUpdatTimer.start(1/50)
+        self.dataUpdatTimer.start(1/20)
+
+    def clearBuffer(self):
+        self.data_list.clear()
+        self.beginResetModel()
+        self.endResetModel()
 
 
 
