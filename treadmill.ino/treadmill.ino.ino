@@ -1,15 +1,14 @@
 
-float analogValA = 301.0; //Reading with loadA on the load cell
+float analogValA = 0; //Reading with loadA on the load cell
 float loadA = 0.0; //  (Kg,lbs..) //Known load placed on the load cell
-float analogValB = 302.0; // Reading with loadB on the load cell
-float loadB = 80.0; //  (Kg,lbs..) // Known load placed on the load cell
+float analogValB = 4.82; // Reading with loadB on the load cell
+float loadB = 150.0; //  (Kg,lbs..) // Known load placed on the load cell
 
 
-int time_step = 25; // reading every .025.s
+int time_step = 1000; // reading every .025.s
 long time = 0;
 
 void setup() {
-  // put your setup code here, to run once:
   Serial.begin(9600);
 }
 
@@ -40,7 +39,7 @@ void loop() {
   */
   
   // Only reading data from 1 dimension so we use this currently
-  float voltage = sensorValue * (5.0 / 1023.0);
+  float voltage = sensorValue * (10.0 / 1023.0);
   float averageVoltage = 0.99*averageVoltage + .01*voltage;
 
   
@@ -49,7 +48,7 @@ void loop() {
   //Check to see if it is time to print again.
   if(millis() > time + time_step){
     // For 1 dimension
-    float load = analogToLoad(averageVoltage);
+    float load = analogToLoad(voltage);
 
     // For 3 dimensions
     /*
@@ -59,7 +58,8 @@ void loop() {
     */
     
     // Print the current load (one dimension)
-    Serial.print(load);Serial.print(",");Serial.println(time);
+    //Serial.print("Voltage:");Serial.println(voltage);
+    Serial.println(load);//Serial.print(",");Serial.println(time);
 
     /*
     //Print the current load (3 dimension)
@@ -71,6 +71,7 @@ void loop() {
     Serial.print(",");
     Serial.println(time);
     */
+    time = millis();
   }
 }
 
