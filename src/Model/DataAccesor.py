@@ -1,8 +1,10 @@
-from src.Input.fakeSerial import Serial
+#from src.Input.fakeSerial import Serial
 from collections import deque
 from PyQt5.QtCore import pyqtSignal, QObject
 import time
 import csv
+import serial
+
 
 
 ## inheriting from QObject allows the class to emit signals that indicate model has started collecting data
@@ -12,6 +14,7 @@ class Signal(QObject):
     resetPort = pyqtSignal()
 
 
+
 # class is static so that the table and graph classes have access to the same data
 class Data():
     # bufferSize = 500
@@ -19,17 +22,22 @@ class Data():
     graphDataBuffer = deque()  # using deque becuase appending and removing performace is O(1) comparaed to lists performance O(n)
     tableDataBuffer = deque()
     signal = Signal()
+    port ='COM4'
+    #port ="Port_#0002.Hub_#0004"
+    serial1 = serial.Serial('COM4', baudrate=9600, timeout=0)
+    temp =5
 
     @classmethod
     def startCollecting(klass):
-        Serial.start()  ## opens up a fake serial port and starts writing random data to it (#port only collects for 10 seconds)
+        #klass.Serial.start()  ## opens up a fake serial port and starts writing random data to it (#port only collects for 10 seconds)
         time.sleep(1 / 100)  ## give time for the port to start up befre emmiting the sginal
         klass.signal.startedCollecting.emit()  ## emit signal to indicate that model started collecting data
 
     @classmethod
     def updateBuffers(klass):
-        if (Serial.isOpen):
-            data = Serial.readline()
+        print (klass.serial1.readLine())
+        if (klass.serial1.isOpen()):
+            data = klass.serial1.readline()
             if (len(klass.graphDataBuffer) % 4 == 0):
                 klass.addToBuf(klass.tableDataBuffer, data, True)
             klass.addToBuf(klass.graphDataBuffer, data, False)
@@ -53,8 +61,8 @@ class Data():
     def reset(klass):
         klass.graphDataBuffer.clear()
         klass.tableDataBuffer.clear()
-        Serial.close()
-        klass.signal.resetPort.emit()
+        #klass.serial1.close()
+        #klass.signal.resetPort.emit()
 
     @classmethod
     def saveData(klass):
