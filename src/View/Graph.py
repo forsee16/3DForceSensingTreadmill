@@ -8,12 +8,15 @@ from matplotlib.figure import Figure
 from collections import deque
 from src.Model.DataAccesor import Data
 import time
+import csv
+import numpy
 
 class MplCanvas(FigureCanvas): ## MathPlotLib canvas for plotting the graphs
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
     def __init__(self, parent=None, width=5, height=4):
         fig = Figure(figsize=(width, height), facecolor= "white")
         self.axes = fig.add_subplot(1,1,1)
+
 
         # We want the axes cleared every time plot() is called
         self.axes.hold(False)
@@ -34,43 +37,80 @@ class AnimationWidget(QtWidgets.QWidget):
         vbox.addWidget(self.navi_toolbar)
         vbox.addWidget(self.canvas)
         self.setLayout(vbox)
+        self.line, = self.canvas.axes.plot([], [], lineWidth=2)
+        self.xlabel = "Time (s)"
+        self.ylabel = "Force (kg)"
+        self.xlimit = (0,20)
+        self.ylimit = (0,200)
+        self.refreshRate = 0.03
+        self.canvas.axes.set_xlim(self.xlimit)
+        self.canvas.axes.set_ylim(self.ylimit)
+        self.canvas.axes.set_xlabel(self.xlabel)
+        self.canvas.axes.set_ylabel(self.ylabel)
+        self.ani = ControlFuncAnimation(self.canvas.figure, self.update_graph, init_func=self.init, blit=True, interval=30)
 
-        self.line, = self.canvas.axes.plot([], [], animated=True, lw=2)
-        self.canvas.axes.set_xlim(0, 100)
-        self.canvas.axes.set_ylim(-50, 50)
-        self.ani = ControlFuncAnimation(self.canvas.figure, self.update_graph, init_func=self.init, blit=True, interval=25)
-        Data.signal.doneCollecting.connect(self.stop) ## the stop() function will get called when a doneCollecting singal is received
     # init first frame of graph to empty
     def init(self):
         self.line.set_data([], [])
         return self.line,
 
-
     # this function gets called by FuncAnimation at specified intervals (specified in the ControlFuncAnimation)
     def update_graph(self, i):
-        #x = np.linspace(0, 20, 1000)
-        #y = np.sin(x - 0.01 *frame) #
-        #data = self.readSerial() # data read from the serial port
-        data = Data.getData()
-        #startTime = time.time()
-        self.line.set_data(range(len(data)), data) # x is unchanging
-        #finishTime = time.time() - startTime
-        #self.average += finishTime
-        #self.average /= (i+1)
-        #print(finishTime)
+        Data.updateBuffers()
+        data = Data.graphDataBuffer
+        xdata = numpy.array(range(len(data)))*self.refreshRate
+        self.line.set_data(xdata, data)
+        if(xdata[-1] >= 20): ## stop collecting at 20 seconds
+            temp = self.line,
+            self.stop()
+            return temp
         return self.line,
+
 
     #start plotting points
     def start(self):
+        Data.reset()
         Data.startCollecting()
         self.ani._start()
 
     #stop plotting
     def stop(self):
         self.ani._stop()
+        Data.closePort()
+        data = Data.graphDataBuffer
+        self.canvas.axes.lines.remove(self.line)
+        self.line, = self.canvas.axes.plot(numpy.array(range(len(data)))*self.refreshRate, data, lineWidth=2)
+        self.canvas.axes.set_xlabel(self.xlabel)
+        self.canvas.axes.set_ylabel(self.ylabel)
+        self.canvas.axes.set_xlim(self.xlimit)
+        self.canvas.axes.set_ylim(self.ylimit)
+        self.canvas.draw()
 
-    def plot(self):
-        pass
+    def loadData(self):
+        x=deque()
+        y=deque()
+        even=True
+        with open('force.csv', 'r') as csvfile:
+            csvreader = csv.reader(csvfile, delimiter=',', quotechar='|')
+            for row in csvreader:
+                if(even):
+                    y.appendleft( float(row[0]))
+                even = not even
+
+
+        counter =0
+        counterVal = 0
+
+        while(counter<len(y)):
+            x.append(counterVal)
+            counterVal = counterVal +0.120
+            counter = counter +1
+        self.line, = self.canvas.axes.plot(x,y, lineWidth=2)
+        self.canvas.axes.set_xlabel(self.xlabel)
+        self.canvas.axes.set_ylabel(self.ylabel)
+        self.canvas.axes.set_xlim(self.xlimit)
+        self.canvas.axes.set_ylim(self.ylimit)
+        self.canvas.draw()
 
 
 class ControlFuncAnimation(animation.FuncAnimation):

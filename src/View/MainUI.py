@@ -31,10 +31,10 @@ class MainUI:
         self.tableView = QtWidgets.QTableView(self.centralwidget)
         self.tableView.setObjectName("tableView")
         self.verticalLayout_1.addWidget(self.tableView)
-        self.horizontalLayout.addLayout(self.verticalLayout_1)
+        self.horizontalLayout.addLayout(self.verticalLayout_1, 1)
         self.verticalLayout_2 = QtWidgets.QVBoxLayout()
         self.verticalLayout_2.setObjectName("verticalLayout_2")
-        self.horizontalLayout.addLayout(self.verticalLayout_2)
+        self.horizontalLayout.addLayout(self.verticalLayout_2, 3)
         self.centralWidgetLayout.addLayout(self.horizontalLayout)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
@@ -56,31 +56,38 @@ class MainUI:
         self.menuHelp.addAction(self.actionAbout)
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuHelp.menuAction())
-
         ########################
+
+        #splitter = QtWidgets.QSplitter()
+
 
         hbox = QtWidgets.QHBoxLayout()
         self.start_button = QtWidgets.QPushButton(self.centralwidget)
         self.start_button.setObjectName("start")
-        #self.start_button.adjustSize()
         self.stop_button = QtWidgets.QPushButton(self.centralwidget)
         self.start_button.setObjectName("stop")
+        self.load_button = QtWidgets.QPushButton(self.centralwidget)
+        self.load_button.setObjectName("load")
+
+
 
 
         hbox.addWidget(self.start_button)
         hbox.addWidget(self.stop_button)
-        self.verticalLayout_2.addLayout(hbox)
+        hbox.addWidget(self.load_button)
+        spacerItem = QtWidgets.QSpacerItem(0,0, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        hbox.addItem(spacerItem)  ## add a spacer to the right of buttons so they dont span the whole layoyt
+        self.verticalLayout_2.addLayout(hbox) ## add horizontal layoyt (includes 3 buttons) on the vertical layout on the right
+
+
 
         self.graph = AnimationWidget()
-        self.verticalLayout_2.addWidget(self.graph)
+        self.verticalLayout_2.addWidget(self.graph) ## add graph to vertical layout on the right
         self.start_button.clicked.connect(self.graph.start)
         self.stop_button.clicked.connect(self.graph.stop)
+        self.load_button.clicked.connect(self.graph.loadData)
         model = TableModel()
         self.tableView.setModel(model)
-
-        #self.verticalLayout_1.setGeometry(self.tableView.geometry())
-
-
 
         #######################
 
@@ -96,4 +103,5 @@ class MainUI:
         self.actionAbout.setText(_translate("MainWindow", "About"))
         self.start_button.setText(_translate("MainWindow", "start"))
         self.stop_button.setText(_translate("MainWindow", "stop"))
+        self.load_button.setText(_translate("MainWindow", "load"))
 

@@ -5,26 +5,24 @@ from collections import deque
 class TableModel(QtCore.QAbstractTableModel):
 
 
-    def __init__(self, header=[], data_list=[]):
+    def __init__(self, header=[]):
         super(TableModel, self).__init__()
-        self.data_list = data_list
-        self.header = ['Number']
+        self.header = ['Time(s)', 'Force (kg)']
         self.numOfRows = 10
-        #self.timer = QtCore.QTimer()
-        #self.timer.timeout.connect(self.insertRow)
         self.dataUpdatTimer = QtCore.QTimer()
         self.dataUpdatTimer.timeout.connect(self.updateData)
-        #self.rowsInserted.connect(self.increaseRowByOne)
         self.dataUpdatTimer.timeout.connect(self.insertRow)
+        self.data_list = deque()
+        self.time_list = deque()
         Data.signal.startedCollecting.connect(self.startDataUpdateTimer)
-        #self.dataChanged.connect(self.getData)
+        Data.signal.resetTable.connect(self.resetTable)
 
 
     def rowCount(self, QModelIndex_parent=None, *args, **kwargs):
         return self.numOfRows
 
     def columnCount(self, QModelIndex_parent=None, *args, **kwargs):
-            return 1
+            return 2
 
     def data(self, QModelIndex, int_role=None):
         if not QModelIndex.isValid():
@@ -34,7 +32,11 @@ class TableModel(QtCore.QAbstractTableModel):
         elif QModelIndex.row() >= len(self.data_list):
             return None
         #print(self.data_list)
-        return self.data_list[QModelIndex.row()]
+        #point = self.data_list[int]
+        if(QModelIndex.column() == 0):
+            return self.time_list[QModelIndex.row()]
+        else:
+            return self.data_list[QModelIndex.row()]
 
 
 
@@ -59,28 +61,27 @@ class TableModel(QtCore.QAbstractTableModel):
 
 
     def updateData(self):
-        self.getData()
+        self.data_list = Data.tableDataBuffer
+        self.time_list = Data.timeBuffer
         topLeft = self.createIndex(0,0)
         rowNum = self.numOfRows
         colNum = self.columnCount()
-        bottomLeft = self.createIndex(rowNum,colNum)
+        bottomLeft = self.createIndex(rowNum,rowNum)
         self.dataChanged.emit(bottomLeft, bottomLeft)
-
-
-    def getData(self):
-        data = deque(Data.dataBuffer)
-        data.reverse()
-        #temp = Data.getData()
-        #temp.reverse()
-        self.data_list = data
-
 
     def increaseRowByOne(self):
         self.numOfRows += 1
 
     def startDataUpdateTimer(self):
-        self.getData()
-        self.dataUpdatTimer.start(100)
+        #self.getData()
+        self.dataUpdatTimer.start(1/20)
+
+    def resetTable(self):
+        self.dataUpdatTimer.stop()
+        self.numOfRows = 10
+        self.data_list.clear()
+        self.beginResetModel()
+        self.endResetModel()
 
 
 
