@@ -7,22 +7,22 @@ class TableModel(QtCore.QAbstractTableModel):
 
     def __init__(self, header=[]):
         super(TableModel, self).__init__()
-        self.header = ['Data']
+        self.header = ['Time(s)', 'Force (kg)']
         self.numOfRows = 10
         self.dataUpdatTimer = QtCore.QTimer()
         self.dataUpdatTimer.timeout.connect(self.updateData)
         self.dataUpdatTimer.timeout.connect(self.insertRow)
-        self.indx = 0
-        self.data_list = deque([])
+        self.data_list = deque()
+        self.time_list = deque()
         Data.signal.startedCollecting.connect(self.startDataUpdateTimer)
-        Data.signal.resetPort.connect(self.resetTable)
+        Data.signal.resetTable.connect(self.resetTable)
 
 
     def rowCount(self, QModelIndex_parent=None, *args, **kwargs):
         return self.numOfRows
 
     def columnCount(self, QModelIndex_parent=None, *args, **kwargs):
-            return 1
+            return 2
 
     def data(self, QModelIndex, int_role=None):
         if not QModelIndex.isValid():
@@ -33,7 +33,10 @@ class TableModel(QtCore.QAbstractTableModel):
             return None
         #print(self.data_list)
         #point = self.data_list[int]
-        return self.data_list[QModelIndex.row()]
+        if(QModelIndex.column() == 0):
+            return self.time_list[QModelIndex.row()]
+        else:
+            return self.data_list[QModelIndex.row()]
 
 
 
@@ -59,19 +62,12 @@ class TableModel(QtCore.QAbstractTableModel):
 
     def updateData(self):
         self.data_list = Data.tableDataBuffer
+        self.time_list = Data.timeBuffer
         topLeft = self.createIndex(0,0)
         rowNum = self.numOfRows
         colNum = self.columnCount()
         bottomLeft = self.createIndex(rowNum,rowNum)
         self.dataChanged.emit(bottomLeft, bottomLeft)
-
-
-    #def getData(self):
-        #data = Data.tableDataBuffer
-        # if (self.indx < len(data)):
-        #     self.data_list.append(data[self.indx])
-        #     self.indx += 5
-
 
     def increaseRowByOne(self):
         self.numOfRows += 1
@@ -83,7 +79,6 @@ class TableModel(QtCore.QAbstractTableModel):
     def resetTable(self):
         self.dataUpdatTimer.stop()
         self.numOfRows = 10
-        self.indx = 0
         self.data_list.clear()
         self.beginResetModel()
         self.endResetModel()

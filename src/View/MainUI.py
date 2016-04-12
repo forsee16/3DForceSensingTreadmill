@@ -34,7 +34,7 @@ class MainUI:
         self.horizontalLayout.addLayout(self.verticalLayout_1, 1)
         self.verticalLayout_2 = QtWidgets.QVBoxLayout()
         self.verticalLayout_2.setObjectName("verticalLayout_2")
-        self.horizontalLayout.addLayout(self.verticalLayout_2, 5)
+        self.horizontalLayout.addLayout(self.verticalLayout_2, 3)
         self.centralWidgetLayout.addLayout(self.horizontalLayout)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
