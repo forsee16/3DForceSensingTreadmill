@@ -58,6 +58,9 @@ class MainUI:
         self.menubar.addAction(self.menuHelp.menuAction())
         ########################
 
+        #splitter = QtWidgets.QSplitter()
+
+
         hbox = QtWidgets.QHBoxLayout()
         self.start_button = QtWidgets.QPushButton(self.centralwidget)
         self.start_button.setObjectName("start")
@@ -72,12 +75,17 @@ class MainUI:
         hbox.addWidget(self.start_button)
         hbox.addWidget(self.stop_button)
         hbox.addWidget(self.load_button)
+        spacerItem = QtWidgets.QSpacerItem(0,0, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        hbox.addItem(spacerItem)  ## add a spacer to the right of buttons so they dont span the whole layoyt
         self.verticalLayout_2.addLayout(hbox) ## add horizontal layoyt (includes 3 buttons) on the vertical layout on the right
+
+
 
         self.graph = AnimationWidget()
         self.verticalLayout_2.addWidget(self.graph) ## add graph to vertical layout on the right
         self.start_button.clicked.connect(self.graph.start)
         self.stop_button.clicked.connect(self.graph.stop)
+        self.load_button.clicked.connect(self.graph.loadData)
         model = TableModel()
         self.tableView.setModel(model)
 

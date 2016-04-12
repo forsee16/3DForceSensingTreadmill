@@ -37,7 +37,7 @@ class AnimationWidget(QtWidgets.QWidget):
         vbox.addWidget(self.canvas)
         self.setLayout(vbox)
 
-        self.line, = self.canvas.axes.plot([], [], animated=True, lw=2)
+        self.line, = self.canvas.axes.plot([], [], animated=True, lineWidth=2)
         self.canvas.axes.set_xlim(0, 100)
         self.canvas.axes.set_ylim(-50, 50)
         #self.canvas.axes.autoscale(enable=False, axis='both', tight=False)
@@ -71,8 +71,10 @@ class AnimationWidget(QtWidgets.QWidget):
             x.append(counterVal)
             counterVal = counterVal +0.125
             counter = counter +1
-
-        self.line.set_data(x,y)
+        self.canvas.axes.plot(x,y)
+        self.canvas.axes.set_xlabel('Time (s)')
+        self.canvas.axes.set_ylabel('Data')
+        self.canvas.draw()
 
     # this function gets called by FuncAnimation at specified intervals (specified in the ControlFuncAnimation)
     def update_graph(self, i):
@@ -83,6 +85,7 @@ class AnimationWidget(QtWidgets.QWidget):
         data = Data.graphDataBuffer
         self.line.set_data(range(len(data)), data) # x is unchanging
         return self.line,
+
 
     #start plotting points
     def start(self):
