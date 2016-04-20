@@ -11,7 +11,7 @@ import serial
 class Signal(QObject):
     startedCollecting = pyqtSignal()
     resetTable = pyqtSignal()
-
+    loadData = pyqtSignal()
 
 
 # class is static so that the table and graph classes have access to the same data
@@ -22,7 +22,7 @@ class Data():
     tableDataBuffer = deque()
     timeBuffer = deque()
     signal = Signal()
-    serial1 = serial.Serial('COM4', baudrate=9600, timeout=100)
+    #serial1 = None#serial.Serial('COM4', baudrate=9600, timeout=100)
     timeStep = 0
 
     @classmethod

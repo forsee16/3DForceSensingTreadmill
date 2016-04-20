@@ -49,6 +49,7 @@ class AnimationWidget(QtWidgets.QWidget):
         self.canvas.axes.set_ylabel(self.ylabel)
         self.ani = ControlFuncAnimation(self.canvas.figure, self.update_graph, init_func=self.init, blit=True, interval=30)
 
+
     # init first frame of graph to empty
     def init(self):
         self.line.set_data([], [])
@@ -111,6 +112,9 @@ class AnimationWidget(QtWidgets.QWidget):
         self.canvas.axes.set_xlim(self.xlimit)
         self.canvas.axes.set_ylim(self.ylimit)
         self.canvas.draw()
+        Data.tableDataBuffer = y
+        Data.timeBuffer = x
+        Data.signal.loadData.emit()
 
 
 class ControlFuncAnimation(animation.FuncAnimation):
