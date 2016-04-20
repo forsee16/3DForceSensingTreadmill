@@ -8,7 +8,7 @@ class TableModel(QtCore.QAbstractTableModel):
     def __init__(self, header=[]):
         super(TableModel, self).__init__()
         self.header = ['Time(s)', 'Force (kg)']
-        self.numOfRows = 10
+        self.numOfRows = 150
         self.dataUpdatTimer = QtCore.QTimer()
         self.dataUpdatTimer.timeout.connect(self.updateData)
         self.dataUpdatTimer.timeout.connect(self.insertRow)
@@ -16,6 +16,9 @@ class TableModel(QtCore.QAbstractTableModel):
         self.time_list = deque()
         Data.signal.startedCollecting.connect(self.startDataUpdateTimer)
         Data.signal.resetTable.connect(self.resetTable)
+        Data.signal.loadData.connect(self.updateData)
+        Data.signal.loadData.connect(self.insertRow)
+
 
 
     def rowCount(self, QModelIndex_parent=None, *args, **kwargs):
